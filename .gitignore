@@ -128,3 +128,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# yarn v2
+.yarn/cache
+
+# for mac env
+.DS_Store
