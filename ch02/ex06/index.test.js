@@ -1,8 +1,9 @@
-import { fizzbuzz } from "./index.js";
+import { fizzbuzz } from "./index.ts";
 
 describe("FizzBuzz", () => {
   it("1から100までのFizzBuzzの結果を返すこと", () => {
     const actual = fizzbuzz();
+    console.log(`${actual}`)
     const expected = `1
 2
 Fizz
