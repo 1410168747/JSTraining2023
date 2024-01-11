@@ -1,4 +1,4 @@
-import { padStart, slice, substring, trim } from "./index.js"; // typescript で書く場合は "./index.ts"
+import { padStart, slice, substring, trim } from "./index.ts"; // typescript で書く場合は "./index.ts"
 
 function substringTestCase(str, indexStart, indexEnd) {
   return [str, indexStart, indexEnd, str.substring(indexStart, indexEnd)];
