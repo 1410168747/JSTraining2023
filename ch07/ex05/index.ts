@@ -59,23 +59,26 @@ console.log(seq); // [1, 2, 3, 4, 5]
 
 */
 
-type Day = "月" | "火" | "水" | "木" | "金" | "土" | "日";
+export const pop = <T>(arr: T[]): T[] =>
+  arr.length === 0 ? [] : arr.slice(0, arr.length - 1);
 
-export const isWeekEnd1 = (day: Day) => day === "土" || day === "日";
+export const push = <T>(arr: T[], ...es: T[]): T[] => arr.concat(...es);
 
-export function isWeekEnd2(day: Day): boolean {
-  if (day === "土" || day === "日") {
-    return true;
+export const shift = <T>(arr: T[]): T[] => arr.slice(1, arr.length);
+
+export function unshift<T>(arr: T[], ...es: T[]): T[] {
+  if (arr === null || arr === undefined) {
+    throw new TypeError("arr is null or undefined");
   }
-  return false;
-}
-
-export function isWeekEnd3(day: Day): boolean {
-  switch (day) {
-    case "土":
-    case "日":
-      return true;
-    default:
-      return false;
+  if (es === null || es === undefined || es.length === 0) {
+    return ([] as T[]).concat(arr);
+  } else {
+    return [...es].concat(arr);
   }
 }
+
+export const sort = <T>(
+  arr: T[],
+  cb: (a: T, b: T) => number = (a, b) =>
+    String(a) === String(b) ? 0 : String(a) < String(b) ? -1 : 1
+): T[] => arr.concat().sort(cb);

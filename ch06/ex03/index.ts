@@ -15,8 +15,8 @@ q.z = 3;
 let f = q.toString();
 q.x + q.y;
 
-console.log(`o.isPrototypeOf(p): ${obj.isPrototypeOf(p)}`); // true
-console.log(`o.isPrototypeOf(q): ${obj.isPrototypeOf(q)}`); // true
+console.log(`obj.isPrototypeOf(p): ${obj.isPrototypeOf(p)}`); // true
+console.log(`obj.isPrototypeOf(q): ${obj.isPrototypeOf(q)}`); // true
 console.log(`p.isPrototypeOf(q): ${p.isPrototypeOf(q)}`); // true
 
 const o = new Object();
@@ -64,14 +64,14 @@ console.log(
 ); // false
 
 console.log(
-  `Object.prototype.isPrototypeOf(m): ${Object.prototype.isPrototypeOf(d)}`
+  `Object.prototype.isPrototypeOf(m): ${Object.prototype.isPrototypeOf(m)}`
 ); // true
 console.log(
-  `Array.prototype.isPrototypeOf(m): ${Array.prototype.isPrototypeOf(d)}`
+  `Array.prototype.isPrototypeOf(m): ${Array.prototype.isPrototypeOf(m)}`
 ); // false
 console.log(
-  `Date.prototype.isPrototypeOf(m): ${Date.prototype.isPrototypeOf(d)}`
+  `Date.prototype.isPrototypeOf(m): ${Date.prototype.isPrototypeOf(m)}`
 ); // false
 console.log(
-  `Map.prototype.isPrototypeOf(m): ${Map.prototype.isPrototypeOf(d)}`
+  `Map.prototype.isPrototypeOf(m): ${Map.prototype.isPrototypeOf(m)}`
 ); // true

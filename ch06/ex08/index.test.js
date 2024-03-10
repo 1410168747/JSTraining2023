@@ -1,61 +1,137 @@
-import { assign } from "./index.ts";
+import { restrict, substract } from "./index.ts";
 
-const cases = [
-  {
-    description: "オブジェクトへの単純なプロパティ追加",
-    target: { a: "a" },
-    source: { a: 1 },
-    sources: [{ a: 1 }]
-  },
-  {
-    description: "null の場合",
-    target: { a: "a" },
-    sources: [null],
-  },
-  {
-    description: "空オブジェクトの場合",
-    target: { a: "a" },
-    sources: [{}],
-  },
-  {
-    description: "undefined の場合",
-    target: { a: "a" },
-    sources: [undefined],
-  },
-  {
-    description: "複数のソースオブジェクトの場合",
-    target: { a: "a" },
-    source1: { a: 1, b: 2 },
-    source2: { a: 2, c: 4 },
-    sources: [this.source1, this.source2],
-  },
-  {
-    description: "多数のソースオブジェクトの場合",
-    target: { a: "a" },
-    source1: { a: 1, b: 2 },
-    source2: { a: 2, c: 4 },
-    source2: { a: 8, d: 16 },
-    sources: [this.source1, this.source2, this.source3],
-  },
-  {
-    description: "シンボルプロパティを含む場合",
-    target: { [Symbol.for("prop")]: "a" },
-    source: { [Symbol.for("prop")]: 1 },
-    sources: [this.source],
-  },
-  {
-    description: "オブジェクトがネストしている場合",
-    target: { a: "a" },
-    source1: { a: 1, b: 2 },
-    source2: { a: 2, c: { d: 4, f: 8 } },
-    sources: [this.source1, this.source2],
-  },
-];
+describe("restrict", () => {
+  const symbol = Symbol("test");
+  const parent = { parent: "parent" };
+  test.each([
+    { target: {}, template: {}, expected: {} },
+    { target: {}, template: { a: {}, 1: [], [symbol]: 3 }, expected: {} },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      template: {},
+      expected: { [symbol]: 3 },// templateにa,1は存在しないので削除
+    },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      template: { a: {} },
+      expected: { a: {}, [symbol]: 3 },// templateに1は存在しないので削除
+    },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      template: { a: {}, 1: [] },
+      expected: { a: {}, 1: [], [symbol]: 3 },
+    },
+    {
+      target: { a: "", 1: [], [symbol]: 3 },
+      template: { a: "", [symbol]: 3 },
+      expected: { a: "", [symbol]: 3 },// templateに1は存在しないので削除
+    },
+    {
+      target: { a: "", 1: [], [symbol]: 3 },
+      template: { 1: [], [symbol]: 3 },
+      expected: { 1: [], [symbol]: 3 },// templateにaは存在しないので削除
+    },
+    {
+      // const parent: {
+      //   parent: string;
+      // }
+      target: Object.create(parent),
+      template: parent,
+      expected: Object.create(parent),
+    },
+    {
+      target: Object.create(parent),
+      template: {},
+      expected: Object.create(parent),// templateにparentは存在しないので、targetのparentは削除されそうだが、実はtargetのparentは継承プロパティなので削除されない
+    },
+    {
+      target: { parent: "parent" },
+      template: Object.create(parent),
+      expected: {},// templateにparentは存在しないが、parentは継承プロパティなので削除されない
+    },
+  ])(
+    "$#: target,template,expected = {$target, $template, $expected}",
+    ({ target, template, expected }) => {
+      const result = restrict(target, template);
+      expect(result).toBe(target);
+      expect(result).toEqual(expected);
+    },
+  );
+});
 
-describe("assign", () => {
-  cases.forEach((c) => {
-    it(c.description, () => {
-      expect(assign(c.target, ...c.sources)).toEqual(assign(c.target, ...c.sources));
-    });
-  });
+describe("substract", () => {
+  const symbol = Symbol("test");
+  const parent = { parent: "parent" };
+  test.each([
+    { target: {}, sources: {}, expected: {} },
+    { target: {}, sources: { a: {}, 1: [], [symbol]: 3 }, expected: {} },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      sources: {},
+      expected: { a: {}, 1: [], [symbol]: 3 },
+    },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      sources: { a: {} },
+      expected: { 1: [], [symbol]: 3 },
+    },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      sources: { a: {}, 1: [] },
+      expected: { [symbol]: 3 },
+    },
+    {
+      target: { a: "", 1: [], [symbol]: 3 },
+      sources: { a: "", [symbol]: 3 },
+      expected: { 1: [], [symbol]: 3 },
+    },
+    {
+      target: { a: "", 1: [], [symbol]: 3 },
+      sources: { 1: [], [symbol]: 3 },
+      expected: { a: "", [symbol]: 3 },
+    },
+    {
+      target: Object.create(parent),
+      sources: parent,
+      expected: Object.create(parent),
+    },
+    {
+      target: { parent: "parent" },
+      sources: Object.create(parent),
+      expected: { parent: "parent" },
+    },
+  ])(
+    "$#: target,sources(1つ),expected = {$target, $sources, $expected}",
+    ({ target, sources, expected }) => {
+      const result = substract(target, sources);
+      expect(result).toBe(target);
+      expect(result).toEqual(expected);
+    },
+  );
+
+  test.each([
+    { target: {}, sources: [{}, {}], expected: {} },
+    {
+      target: { a: {}, 1: [], [symbol]: 3 },
+      sources: [{ a: {} }, { 1: [] }],
+      expected: { [symbol]: 3 },
+    },
+    {
+      target: Object.create(parent),
+      sources: [{}, parent],
+      expected: Object.create(parent),
+    },
+    {
+      target: { parent: "parent" },
+      sources: [Object.create(parent), parent],
+      expected: {},
+    },
+  ])(
+    "$#: target,sources(2つ),expected = {$target, [$sources.0, $sources.1], $expected}",
+    ({ target, sources, expected }) => {
+      const result = substract(target, ...sources);
+      expect(result).toBe(target);
+      expect(result).toEqual(expected);
+    },
+  );
 });
