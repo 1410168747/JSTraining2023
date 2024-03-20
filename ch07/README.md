@@ -259,7 +259,7 @@ class DynamicSizeArray {
 if (this.len >= this.array.length()) {
   // 新しい固定長配列を作成して要素をコピー
   const old = this.array;
-  this.array = makeFixedSizeArray(old.length() * 2);
+  this.array = makeFixedSizeArray(old.length * 2);
   // ...
 }
 ```
