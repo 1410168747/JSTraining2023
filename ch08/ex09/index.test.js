@@ -1,4 +1,4 @@
-import { withResource } from "./index.js";
+import { withResource } from "./index.ts";
 
 describe("withResource", () => {
   it("should do process and call close finally", () => {
@@ -35,5 +35,26 @@ describe("withResource", () => {
     };
     expect(() => withResource(resource, (res) => res.doA())).toThrow(Error);
     expect(resource.called).toEqual(["doA", "close"]);
+  });
+
+  it("close only onces", () => {
+    const resource = {
+      called: [],
+      doA() {
+        this.called.push("doA");
+      },
+      doB() {
+        this.called.push("doB");
+      },
+      close() {
+        this.called.push("close");
+      },
+    };
+    withResource(resource, (res) => {
+      res.doA();
+      res.doB();
+      res.close();
+    });
+    expect(resource.called).toEqual(["doA", "doB", "close"]);
   });
 });
