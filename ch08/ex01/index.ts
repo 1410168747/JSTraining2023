@@ -18,4 +18,4 @@ export const outputArray = (n: number, c: string): Array<string> => {
 
 export const squre = (x: number): number => x ** 2; // 1行の場合はreturnを省略できる
 
-export const now = (): { now: Date } => ({ now: new Date() });
+export const now = (): { now: Date } => ({ now: new Date() }); // オブジェクトを返す場合は括弧が必要

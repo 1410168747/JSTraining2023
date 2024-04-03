@@ -1,4 +1,4 @@
-import { outputArray, squre, now } from './index';
+import { outputArray, squre, now } from './index.ts';
 
 describe('outputArray', () => {
   describe('正常系', () => {
