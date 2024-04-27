@@ -1,11 +1,25 @@
 // f はオブジェクトを1つ引数に取る関数
 function cache(f) {
-  // この関数を実装する
+  // Flyweightパターンを使ってキャッシュを実装
+  const pool = new WeakMap();
+  return (e) => {
+    let v = pool.get(e);
+    if (v == null) {
+      v = f(e);
+      pool.set(e, v);
+    }
+    return v;
+  };
 }
 
-function slowFn(obj) {
-  // 時間のかかる処理
+const WAIT_TIME_SEC = 3;
+
+async function slowFn(obj) {
+  await ((ms) => new Promise(resolve => setTimeout(resolve, ms)))(WAIT_TIME_SEC * 1000)
+  return obj;
 }
 
 // cachedSlowFnを同じ引数で複数回呼び出すと、2回目以降はキャッシュが返る
 const cachedSlowFn = cache(slowFn);
+
+export { cache, slowFn };
