@@ -18,6 +18,8 @@ describe("TypeMap", () => {
   ${Foo} | ${new Foo()}
   ${Date} | ${new Date()}
   ${Object} | ${new Foo()}
+  ${Object} | ${null}
+  ${Object} | ${undefined}
   `("set($key.name, $value) and get($key.name) then $value", ({ key, value }) => {
     const sut = new TypeMap();
     sut.set(key, value);

@@ -12,6 +12,9 @@ export default class TypeMap {
         if ((typeof value).toUpperCase() === key.name.toUpperCase()) {
             return this.#map.set(key, value);
         }
+        if (value == null) {
+            return this.#map.set(key, value);
+        }
         throw new Error('Type Error');
     }
 
