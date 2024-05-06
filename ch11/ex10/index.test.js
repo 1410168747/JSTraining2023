@@ -1,4 +1,4 @@
-import { countDay, countWeekDay, getDay, getDate } from "./index";
+import { countDay, countWeekDay, getDay, getFirstDayOfPreviousMonth } from "./index";
 
 describe("countDay", () => {
 
@@ -84,14 +84,14 @@ describe("getDay", () => {
 
 });
 
-describe("getDate", () => {
+describe("getFirstDayOfPreviousMonth", () => {
 
     it.each`
     input | expected | comments
-    ${new Date("2024-05-06T08:28:16.000Z")} | ${new Date("2024-04-01T00:00:00.000Z")} | ${""}
-    ${new Date("2024-05-06T08:28:16.000+09:00")} | ${new Date("2024-04-01T00:00:00.000Z")} | ${""}
+    ${new Date("2024-05-06T08:28:16.000Z")} | ${new Date(1711897200000)} | ${""}
+    ${new Date("2024-03-31T23:00:00.000Z")} | ${new Date(1709218800000)} | ${"new Date('2024-03-31T23:00:00.000Z') は JST: 2024-04-01 08:00:00. またnew Date(1709218800000) は UTC: 2024-02-29 15:00:00/ JST: 2024-03-01 00:00:00"}
     `(`input: $input gets $expected`, ({ input, expected }) => {
-        expect(getDate(input).getTime()).toEqual(expected.getTime());
+        expect(getFirstDayOfPreviousMonth(input).getTime()).toEqual(expected.getTime());
     });
 
 });

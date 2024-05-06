@@ -7,6 +7,7 @@ function countDay(year: number, month: number): number {
   }
   // 何か引数がアンダーフローする場合は、上位の引数を「桁借り」します。
   // 例えば、new Date(2020, 5, 0) は、 2020 年 5 月 31 日を返します。
+  // 言い換えると、6 月 0 日を指定すると 5 月 31 日になる仕様を使ってうまくやっています。
   return new Date(year, month, 0).getDate();
 }
 
@@ -52,24 +53,45 @@ function* dateRange(begin: Date, end: Date): Generator<Date> {
 }
 
 const DATE_AND_TIME_WIHT_TIMEZONE =
-  /^(?<year>[1-9][0-9]{3})-(?<month>(?:0[1-9])|(?:1[0-2]))-(?<day>(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))T(?<hour>(?:0[0-9])|(?:1[0-9])|(?:2[0-3])):(?<minute>[0-5][0-9]):(?<second>[0-5][0-9])\.(?<subsecond>[0-9]{3})(?<timezone>(Z|[+-][0-1][0-9]:[0-5][0-9]))/;
+  /^(?<year>[1-9][0-9]{3})-(?<month>(?:0[1-9])|(?:1[0-2]))-(?<day>(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))T(?<hour>(?:0[0-9])|(?:1[0-9])|(?:2[0-3])):(?<minute>[0-5][0-9]):(?<second>[0-5][0-9])\.(?<subsecond>[0-9]{3})Z/;
 
-function getDate(date: Date = new Date()): Date {
-  const execResult = DATE_AND_TIME_WIHT_TIMEZONE.exec(date.toISOString());
+/**
+ * 与えられた日付（または現在の日付）に対して、その1ヶ月前の月の初日を返す関数。
+ * 時間帯の違いを適切に処理して、その月の初日をUTCで返します。
+ *
+ * @param {Date} date - 基準となる日付（デフォルトは現在の日付）
+ * @return {Date} 計算された1ヶ月前の月の初日
+ * @throws {Error} 与えられた日付が無効な場合
+ */
+function getFirstDayOfPreviousMonth(date: Date = new Date()): Date {
+  // ホスト環境のタイムゾーンとUTCとの差をミリ秒単位で取得
+  const offsetMs = new Date().getTimezoneOffset() * 60 * 1000;
 
-  const currentMonth = Number.parseInt(execResult?.groups?.month as string);
-  const month = String(currentMonth - 1 === 0 ? 12 : currentMonth - 1).padStart(
-    2,
-    "0"
-  );
-  const currentYear = Number.parseInt(execResult?.groups?.year as string);
-  const year = String(
-    currentMonth - 1 === 0 ? currentYear - 1 : currentYear
-  ).padStart(4, "0");
-  const timezone = execResult?.groups?.timezone;
-  const creating = `${year}-${month}-01T00:00:00.000${timezone}`;
-  const result = new Date(creating);
-  return result;
+  // 現在のローカル時刻をUTCに変換するための調整
+  const localDate = new Date(date.getTime() - offsetMs);
+
+  // 文字列表現の日付から年と月を抽出
+  const execResult = DATE_AND_TIME_WIHT_TIMEZONE.exec(localDate.toISOString());
+  if (execResult === null) {
+    throw new Error("Invalid date format");
+  }
+  const { month: monthString, year: yearString } = execResult.groups || {};
+
+  // 抽出した月から1を減算して先月を取得、1月の場合は12月に修正
+  const m = Number.parseInt(monthString);
+  const month = String(m - 1 === 0 ? 12 : m - 1).padStart(2, "0");
+
+  // 月の減算結果が12月の場合、年も1減らす
+  const y = Number.parseInt(yearString);
+  const year = String(m - 1 === 0 ? y - 1 : y).padStart(4, "0");
+
+  // 取得した年と月、および"01日"を組み合わせて、新しい日付を作成（ただしUTC）
+  const lastMonth1stUTC = new Date(
+    `${year}-${month}-01T00:00:00.000Z`
+  ).getTime();
+
+  // 元のローカル時刻に戻して返却（タイムゾーン差を再度加える）
+  return new Date(lastMonth1stUTC + offsetMs);
 }
 
-export { countDay, countWeekDay, getDay, getDate };
+export { countDay, countWeekDay, getDay, getFirstDayOfPreviousMonth };
