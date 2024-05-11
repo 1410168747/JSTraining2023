@@ -3,7 +3,7 @@ type Format = {
   check: Function;
 };
 
-const FORMATS: Array<Format> = [
+const SUPPORTED_FORMATS: [Format, Format, Format, Format] = [
   {
     format: "PDF",
     check: (data: DataView) =>
@@ -38,6 +38,6 @@ const FORMATS: Array<Format> = [
 
 function detectFileType(data: ArrayBufferLike): Format["format"] {
   const dv = new DataView(data);
-  return FORMATS.find((e) => e.check(dv))?.format ?? "UNKNOWN";
+  return SUPPORTED_FORMATS.find((e) => e.check(dv))?.format ?? "UNKNOWN";
 }
 export { detectFileType };
