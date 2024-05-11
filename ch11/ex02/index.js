@@ -19,7 +19,4 @@ async function slowFn(obj) {
   return obj;
 }
 
-// cachedSlowFnを同じ引数で複数回呼び出すと、2回目以降はキャッシュが返る
-const cachedSlowFn = cache(slowFn);
-
 export { cache, slowFn };
