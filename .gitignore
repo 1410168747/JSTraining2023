@@ -134,3 +134,5 @@ dist
 
 # for mac env
 .DS_Store
+
+**/undone
