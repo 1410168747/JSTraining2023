@@ -11,7 +11,7 @@
  * console.log(counter.next()); // { value: 0, done: false }
  * console.log(counter.next()); // { value: 1, done: false }
  */
-function* counterGen() {
+function* counterGen(): Generator<number, void, unknown> {
   let count = 0;
   while (true) {
     try {

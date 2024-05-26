@@ -1,4 +1,4 @@
-function* generatePrime() {
+function* generatePrime(): Generator<number> {
   const primes = [];
   while (true) {
     const newPrime = nextPrime(primes);
