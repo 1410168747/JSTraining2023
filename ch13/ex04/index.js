@@ -64,34 +64,4 @@ function promiseSequence(inputs, promiseMaker) {
     return Promise.resolve([]).then(handleNextInput);
 }
 
-// function fetchSumOfFileSizes4(path, callback) {
-//     fs.readdir(path, (err, files) => {
-//         if (err) {
-//             callback(err);
-//             return;
-//         }
-
-//         let total = 0;
-//         const rest = [...files];
-
-//         function iter() {
-//             if (rest.length === 0) {
-//                 callback(null, total);
-//                 return;
-//             }
-
-//             const next = rest.pop();
-//             fs.stat(join(path, next), (err, stats) => {
-//                 if (err) {
-//                     callback(err);
-//                     return;
-//                 }
-//                 total += stats.size;
-//                 iter();
-//             });
-//         }
-//         iter();
-//     });
-// }
-
 export { fetchFirstFileSize, fetchSumOfFileSizes, fetchSumOfFileSizes2 }
