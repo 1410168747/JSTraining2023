@@ -1,0 +1,2 @@
+`longRunningButAsyncFunction`が無限ループのため、実行スタックがクリアされず、
+setTimeoutで登録されたコールバックを実行するマイクロタスクの実行順がくることはない。

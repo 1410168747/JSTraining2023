@@ -1,4 +1,4 @@
-import { fetchFirstFileSize, fetchSumOfFileSizes, fetchSumOfFileSizes2 } from "./index";
+import { fetchSumOfFileSizes } from "./index";
 import * as path from 'path';
 import * as fs from 'fs';
 
