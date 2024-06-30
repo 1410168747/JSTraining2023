@@ -1,15 +1,8 @@
 export class MyArrayLike {
 
-  constructor(length) {
+  constructor(length) {// mapおよびsliceからはlengthが渡されるように見えるが、根拠は不明
     this.length = length;
   }
-
-  *[Symbol.iterator]() {
-    for (let i = 0; i < this.length; i++) {
-      yield this[i];
-    }
-  };
-
 }
 
 export class MyArray extends Array {
