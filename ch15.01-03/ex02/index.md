@@ -7,7 +7,7 @@
 ルートフォルダにて、以下のコマンドでサーバを立ち上げる
 
 ```shell
-node ch15.01-03/ex02/root/servers/server.js
+node ch15.01-03/ex02/index.js
 ```
 
 #### 2

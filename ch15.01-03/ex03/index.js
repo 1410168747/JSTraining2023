@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'; // 追加
 const port = 8080;
 const __filename = fileURLToPath(import.meta.url); // 現在のファイルの絶対パスを取得
 const __dirname = resolve(__filename, '..'); // 現在のファイルがあるディレクトリの絶対パスを取得
-const rootDir = resolve(__dirname, '../../root'); // サーバーファイルからプロジェクトディレクトリまで
+const rootDir = resolve(__dirname, './root'); // サーバーファイルからプロジェクトディレクトリまで
 
 const server = http.createServer((req, res) => {
     let url = req.url === '/' ? '/index.html' : req.url; // デフォルトページをindex.htmlに設定
