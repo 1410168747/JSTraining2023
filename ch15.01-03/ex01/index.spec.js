@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { fileURLToPath } from 'url'; // Node.js環境で利用するためのモジュールをインポート
+import path from 'path';
 
 /**
  * @param {import("@playwright/test").Page} page
@@ -46,7 +48,12 @@ function queryToDo(page, index) {
 
 test.describe("simple todo app", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/ch15.01-03/ex01");
+    // 現在のファイルのURLからファイルパスを取得
+    const fileName = fileURLToPath(import.meta.url);
+    // HTMLファイルへのパスを組み立てる
+    const html = path.join(path.dirname(fileName), 'index.html');
+    // ローカルのHTMLファイルにnavigate
+    await page.goto(`file://${html}`);
   });
 
   test("no default todos", async ({ page }) => {

@@ -16,6 +16,7 @@ form.addEventListener("submit", (e) => {
 
   // ここから #todo-list に追加する要素を構築する
   const elem = document.createElement("li");
+  const div = document.createElement("div");
 
   const label = document.createElement("label");
   label.textContent = todo;
@@ -37,9 +38,10 @@ form.addEventListener("submit", (e) => {
 
   // TODO: elem 内に toggle, label, destroy を追加しなさい
   // elem に toggle, label, destroy を追加
-  elem.appendChild(toggle);
-  elem.appendChild(label);
-  elem.appendChild(destroy);
+  div.appendChild(toggle);
+  div.appendChild(label);
+  div.appendChild(destroy);
+  elem.appendChild(div);
 
   list.prepend(elem);
 });
