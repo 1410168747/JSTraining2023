@@ -18,10 +18,7 @@
     "allowImportingTsExtensions": true,
     // デフォルトエクスポートが設定されていないモジュールに対して、
     // import React from "react"; のようなインポートを許可する
-    "allowSyntheticDefaultImports": true,
-
-    /**** added for me ****/
-    "allowJs": true
+    "allowSyntheticDefaultImports": true
   },
   // package.jsonでtype: "module"を指定しているので、ts-nodeで実行する場合もesmである必要がある
   "ts-node": {
