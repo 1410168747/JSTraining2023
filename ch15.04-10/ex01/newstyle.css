@@ -1,0 +1,89 @@
+/* Amazon風のフォントと背景色を設定し、ボディのスタイルを定義 */
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #eaeded;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ToDo入力フォームの余白を設定し、Amazon風のスタイリングを適用 */
+#new-todo-form {
+  margin: 20px 0;
+}
+
+/* 入力フィールドのパディング、境界線、角の丸みを設定 */
+#new-todo-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 10px;
+}
+
+/* Amazon風の「追加」ボタンの背景色、境界線、角の丸み、カーソルのスタイルを適用 */
+#new-todo-form button {
+  padding: 10px 15px;
+  background-color: #f0c14b;
+  border: 1px solid #a88734 #9c7e31 #846a29;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* ボタンにホバーしたときの背景色を暗くする */
+#new-todo-form button:hover {
+  background-color: #e7a33e;
+}
+
+/* Amazon風のスタイリングでToDoリストを定義 */
+#todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 各リスト項目の背景色、パディング、マージン、境界線、角の丸みを適用 */
+#todo-list li {
+  background-color: white;
+  padding: 12px;
+  margin-top: 2px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+/* 完了したToDo項目のテキスト色と打ち消し線を適用 */
+#todo-list li.completed {
+  color: #767676;
+  text-decoration: line-through;
+}
+
+/* リスト項目のコンテンツを横に配置するのに使われるスタイル */
+#todo-list li .view {
+  display: flex;
+  align-items: center;
+}
+
+/* チェックボックスに余白を追加 */
+#todo-list li .toggle {
+  margin-right: 10px;
+}
+
+/* ToDo項目のテキストコンテンツがフレキシブルに広がるようにする */
+#todo-list li .content {
+  flex-grow: 1;
+}
+
+/* 削除ボタンのスタイルをAmazon風に設定 */
+#todo-list li .destroy {
+  color: #c60;
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* ホバー時に削除ボタンの下線を表示 */
+#todo-list li .destroy:hover {
+  text-decoration: underline;
+}
