@@ -1,27 +1,55 @@
-const template = document.createElement("template");
-template.innerHTML = `\
-<style>
-.completed {
-  text-decoration: line-through;
-}
-</style>
+customElements.define("inline-circle", class InlineCircle extends HTMLElement {
 
-<form id="new-todo-form">
-  <input type="text" id="new-todo" placeholder="What needs to be done?" />
-  <button>Add</button>
-</form>
-<ul id="todo-list"></ul>
-`;
+  // <inline-circle>要素がドキュメントに挿入されるときに、ブラウザがこのメソッドを呼び出す。
+  // disconnectedCallback()メソッドもあるが、この例では必要ない。
+  connectedCallback() {
+    // 円の作成に必要なスタイルを設定する。
+    this.style.display = "inline-block";
+    this.style.borderRadius = "50%";
+    this.style.borderStyle = "solid";
+    this.style.borderWidth = "1px";
+    this.style.transform = "translateY(10%)";
 
-class TodoApp extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    // 大きさがまだ設定されていない場合、現在のフォントサイズを基にデフォルトの大きさを設定する。
+    if (!this.style.width) {
+      this.style.width = "0.8em";
+      this.style.height = "0.8em";
+    }
 
-    this.form = this.shadowRoot.querySelector("#new-todo-form");
-    // TODO: 残りを実装
+    attributeChangedCallback("diameter", _, this.getAttribute("diameter"))
+    attributeChangedCallback("color", _, this.getAttribute("color"))
+    attributeChangedCallback("border-color", _, this.getAttribute("border-color"))
   }
-}
 
-customElements.define("todo-app", TodoApp);
+  // 静的なobservedAttributesプロパティで、値が変化したときに通知してほしい属性を指定する
+  //（ここではゲッターを使っている。「static」はメソッドにしか使えないため）。
+  static get observedAttributes() { return ["diameter", "color", "border-color"]; }
+
+  // カスタム要素が初めて解釈されるときや、その後解釈されたときに、前記した属性のいずれかが変化すると、このコールバックが呼び出される。
+  attributeChangedCallback(name, _, newValue) {
+    switch (name) {
+      case "diameter":
+        // diameter属性が変更された場合、大きさを更新する。
+        this.style.width = newValue;
+        this.style.height = newValue;
+        break;
+      case "color":
+        // color属性が変更された場合、色を変更する。
+        this.style.backgroundColor = newValue;
+        break;
+      case "border-color":
+        // borderColor属性が変更された場合、境界の色を変更する。
+        this.style.borderColor = newValue;
+        break;
+    }
+  }
+
+  // 要素の属性に対応するJavaScriptプロパティを定義する。ここで定義したゲッターとセッターは、属性を読み出したり設定したりするだけ。
+  // JavaScriptのプロパティが設定されると、属性が設定される。そして、attributeChangedCallback()が呼び出され、要素のスタイルが更新される。
+  get diameter() { return this.getAttribute("diameter"); }
+  set diameter(diameter) { this.setAttribute("diameter", diameter); }
+  get color() { return this.getAttribute("color"); }
+  set color(color) { this.setAttribute("color", color); }
+  get borderColor() { return this.getAttribute("border-color"); }
+  set borderColor(borderColor) { this.setAttribute("border-color", borderColor); }
+});
