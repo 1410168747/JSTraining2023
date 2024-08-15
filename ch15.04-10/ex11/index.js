@@ -44,5 +44,32 @@ form.addEventListener("submit", (e) => {
 });
 
 window.addEventListener("hashchange", () => {
-  // ここを実装してね
+  // ToDoのフィルタリングを行い、その結果をレンダリングする関数
+  function filterAndRenderTodos() {
+    const hash = window.location.hash;
+    let filteredTodos;
+
+    switch (hash) {
+      case '#/active': // 'Active'タブが選択された場合
+        filteredTodos = todos.filter(todo => !todo.completed);
+        break;
+
+      case '#/completed': // 'Completed'タブが選択された場合
+        filteredTodos = todos.filter(todo => todo.completed);
+        break;
+
+      default: // その他の場合（'All'または何も選択されていない状態）
+        filteredTodos = todos;
+        break;
+    }
+
+    // フィルタリングした結果を画面に反映する
+    renderTodos(filteredTodos);
+  }
+
+  // URL内のハッシュ（フラグメント）が変更された際にToDoリストを再レンダリングするイベントリスナー
+  window.addEventListener("hashchange", filterAndRenderTodos);
+
+  // ページが読み込まれた時に、現在のURLハッシュに応じて表示を更新する
+  filterAndRenderTodos();
 });
