@@ -18,7 +18,7 @@
 ...
 ```
 
-http://localhost:3000 や http://localhbost:3001 といった URL で Web サービスが実行されていることを確認できる (ポート番号は上記コマンドの出力を参照)。
+cや http://localhost:3001 といった URL で Web サービスが実行されていることを確認できる (ポート番号は上記コマンドの出力を参照)。
 
 では次に app/foo/page.tsx および app/bar/page.tsx を以下のように作成しよう:
 
