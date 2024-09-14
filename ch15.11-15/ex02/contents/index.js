@@ -1,31 +1,92 @@
 const form = document.querySelector("#new-todo-form");
 const list = document.querySelector("#todo-list");
 const input = document.querySelector("#new-todo");
+const loadingOverlay = document.querySelector("#loading-overlay");
+const DELAY = 1000; // リトライ用の基準デレイ
+
+function showLoading() {
+  loadingOverlay.style.display = 'flex';
+}
+
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // TODO: ここで API を呼び出してタスク一覧を取得し、
-  // 成功したら取得したタスクを appendToDoItem で ToDo リストの要素として追加しなさい
+  console.log(`DOMContentLoaded: ${document.cookie ?? "empty"}`);
+  await fetchTasks();
 });
 
-form.addEventListener("submit", (e) => {
-  // TODO: ここで form のイベントのキャンセルを実施しなさい (なぜでしょう？)
+async function fetchTasks() {
+  await safeFetch('/api/tasks', {
+    method: 'GET',
+    timeout: 3000,
+  });
+}
 
-  // 両端からホワイトスペースを取り除いた文字列を取得する
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
   const todo = input.value.trim();
   if (todo === "") {
     return;
   }
 
-  // new-todo の中身は空にする
   input.value = "";
 
-  // TODO: ここで API を呼び出して新しいタスクを作成し
-  // 成功したら作成したタスクを appendToDoElement で ToDo リストの要素として追加しなさい
+  const newTask = await safeFetch('/api/tasks', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify({ name: todo }),
+  });
+
+  if (newTask) {
+    appendToDoItem(newTask); // 新しいタスクをリストに追加
+  } else {
+    alert("タスクの追加に失敗しました。"); // エラーメッセージを表示
+  }
 });
 
-// API から取得したタスクオブジェクトを受け取って、ToDo リストの要素を追加する
+async function safeFetch(url, options) {
+  showLoading();
+
+  return new Promise((resolve) => {
+    retryWithExponentialBackoff(async () => {
+      try {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+          alert("リクエストがタイムアウトしました。");
+          hideLoading();
+          resolve(null); // null を返してリトライを中止
+        }, options.timeout || 3000);
+
+        const response = await fetch(url, { ...options, signal });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          if (response.status >= 500) {
+            throw new Error(`サーバエラー: ${response.statusText}`);
+          }
+          throw new Error(`エラー: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        hideLoading();
+        resolve(data); // データを返す
+        return data;
+      } catch (error) {
+        console.error(error);
+        return null; // リトライに進む
+      }
+    }, 5, resolve);
+  });
+}
+
 function appendToDoItem(task) {
-  // ここから #todo-list に追加する要素を構築する
   const elem = document.createElement("li");
 
   const label = document.createElement("label");
@@ -33,13 +94,63 @@ function appendToDoItem(task) {
   label.style.textDecorationLine = "none";
 
   const toggle = document.createElement("input");
-  // TODO: toggle が変化 (change) した際に API を呼び出してタスクの状態を更新し
-  // 成功したら label.style.textDecorationLine を変更しなさい
+  toggle.type = "checkbox";
+  toggle.checked = task.status === "completed";
+
+  toggle.addEventListener("change", async () => {
+    try {
+      const response = await safeFetch(`/api/tasks/${task.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+        body: JSON.stringify({ status: toggle.checked ? "completed" : "active" }),
+      });
+
+      if (response) {
+        label.style.textDecorationLine = response.status === "completed" ? "line-through" : "none";
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  });
 
   const destroy = document.createElement("button");
-  // TODO: destroy がクリック (click) された場合に API を呼び出してタスク を削除し
-  // 成功したら elem を削除しなさい
+  destroy.textContent = "Delete";
 
-  // TODO: elem 内に toggle, label, destroy を追加しなさい
+  destroy.addEventListener("click", async () => {
+    try {
+      const response = await safeFetch(`/api/tasks/${task.id}`, { method: "DELETE" });
+      if (response) {
+        elem.remove();
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  elem.appendChild(toggle);
+  elem.appendChild(label);
+  elem.appendChild(destroy);
+
   list.prepend(elem);
+}
+
+function retryWithExponentialBackoff(func, maxRetry, callback) {
+  let retry = 0;
+
+  const retryFunc = async () => {
+    const result = await func();
+
+    if (result) {
+      callback(true);
+    } else if (retry === maxRetry) {
+      callback(false);
+    } else {
+      retry++;
+      setTimeout(retryFunc, 2 ** (retry - 1) * DELAY);
+    }
+  };
+
+  retryFunc();
 }
