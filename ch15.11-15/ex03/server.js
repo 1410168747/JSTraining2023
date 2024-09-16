@@ -242,10 +242,23 @@ function cookieAuthzMiddleware(_url, req, res, params) {
 
 // CORS のヘッダを返すミドルウェア
 function corsMiddleware(_url, _req, res) {
-  // TODO: CORS に必要なヘッダを複数設定する
-  res.setHeader("TODO", "TODO");
-  return true;
+  // CORSヘッダを設定する
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // 指定したオリジンからのリクエストを行うコードでレスポンスが共有できるようにする
+  res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE"); // 許可するHTTPメソッドを指定
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // cookie対応のために許可するヘッダを指定
+  res.setHeader("Access-Control-Allow-Credentials", "true"); // cookie対応のためにクレデンシャル情報を許可
+  res.setHeader("Access-Control-Max-Age", "3600"); // プリフライトリクエストのキャッシュ時間を指定
+
+  // プリフライトリクエストの場合、204 No Contentを返却
+  if (_req.method === "OPTIONS") {
+    res.writeHead(204); // HTTPステータス204を設定
+    res.end(); // レスポンスを終了
+    return false; // OPTIONSリクエストの場合は処理を続けない
+  }
+
+  return true; // CORSヘッダを設定した後の処理を続ける
 }
+
 
 // リクエストボディを読み込む関数
 async function readBodyJson(req) {
@@ -349,6 +362,7 @@ async function main() {
       await routes(
         // TODO: この行のコメントを外す
         // ["OPTIONS", "/api/*", nopHandler, cors],
+        ["OPTIONS", "/api/*", nopHandler, cors],
         ["GET", "/api/tasks", listTasksHandler, authz, cors],
         ["GET", "/api/tasks/{id}", getTaskHandler, authz, cors],
         ["POST", "/api/tasks", createTaskHandler, authz, cors],
