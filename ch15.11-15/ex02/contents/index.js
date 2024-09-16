@@ -1,28 +1,16 @@
 const form = document.querySelector("#new-todo-form");
 const list = document.querySelector("#todo-list");
 const input = document.querySelector("#new-todo");
-const loadingOverlay = document.querySelector("#loading-overlay");
-const DELAY = 1000; // リトライ用の基準デレイ
 
-function showLoading() {
-  loadingOverlay.style.display = 'flex';
-}
+const loadingOverlay = document.querySelector("#loading-overlay");// 通信やリトライが完了するまでユーザが ToDo リストの追加/削除/変更、及びテキストの編集をできないようにするため追加
 
-function hideLoading() {
-  loadingOverlay.style.display = 'none';
-}
 
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log(`DOMContentLoaded: ${document.cookie ?? "empty"}`);
-  await fetchTasks();
-});
-
-async function fetchTasks() {
   await safeFetch('/api/tasks', {
     method: 'GET',
     timeout: 3000,
   });
-}
+});
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -48,43 +36,6 @@ form.addEventListener("submit", async (e) => {
     alert("タスクの追加に失敗しました。"); // エラーメッセージを表示
   }
 });
-
-async function safeFetch(url, options) {
-  showLoading();
-
-  return new Promise((resolve) => {
-    retryWithExponentialBackoff(async () => {
-      try {
-        const controller = new AbortController();
-        const signal = controller.signal;
-        const timeoutId = setTimeout(() => {
-          controller.abort();
-          alert("リクエストがタイムアウトしました。");
-          hideLoading();
-          resolve(null); // null を返してリトライを中止
-        }, options.timeout || 3000);
-
-        const response = await fetch(url, { ...options, signal });
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          if (response.status >= 500) {
-            throw new Error(`サーバエラー: ${response.statusText}`);
-          }
-          throw new Error(`エラー: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        hideLoading();
-        resolve(data); // データを返す
-        return data;
-      } catch (error) {
-        console.error(error);
-        return null; // リトライに進む
-      }
-    }, 5, resolve);
-  });
-}
 
 function appendToDoItem(task) {
   const elem = document.createElement("li");
@@ -136,7 +87,51 @@ function appendToDoItem(task) {
   list.prepend(elem);
 }
 
-function retryWithExponentialBackoff(func, maxRetry, callback) {
+
+/**
+ * 
+ * @param {*} url 
+ * @param {*} options 
+ * @returns 
+ */
+async function safeFetch(url, options) {
+  showLoading();
+
+  return new Promise((resolve) => {
+    retryWithExponentialBackoff(async () => {
+      try {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+          alert("リクエストがタイムアウトしました。");
+          hideLoading();
+          resolve(null); // null を返してリトライを中止
+        }, options.timeout || 3000);
+
+        const response = await fetch(url, { ...options, signal });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          if (response.status >= 500) {
+            throw new Error(`サーバエラー: ${response.statusText}`);
+          }
+          throw new Error(`エラー: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        hideLoading();
+        resolve(data); // データを返す
+        return data;
+      } catch (error) {
+        console.error(error);
+        return null; // リトライに進む
+      }
+    }, 5, resolve);
+  });
+}
+
+function retryWithExponentialBackoff(func, maxRetry, callback, delay = 1000) {
   let retry = 0;
 
   const retryFunc = async () => {
@@ -148,9 +143,17 @@ function retryWithExponentialBackoff(func, maxRetry, callback) {
       callback(false);
     } else {
       retry++;
-      setTimeout(retryFunc, 2 ** (retry - 1) * DELAY);
+      setTimeout(retryFunc, 2 ** (retry - 1) * delay);
     }
   };
 
   retryFunc();
+}
+
+function showLoading() {
+  loadingOverlay.style.display = 'flex';
+}
+
+function hideLoading() {
+  loadingOverlay.style.display = 'none';
 }

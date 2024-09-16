@@ -3,15 +3,17 @@ const list = document.querySelector("#todo-list");
 const input = document.querySelector("#new-todo");
 
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log(`DOMContentLoaded: ${document.cookie ?? "empty"}`);
+
+  console.log(`DOMContentLoaded: ${document.cookie ?? "empty"}`);// サーバー側のHttpOnly属性によりこのログは表示されない。
+
   // TODO: ここで API を呼び出してタスク一覧を取得し、
   // 成功したら取得したタスクを appendToDoItem で ToDo リストの要素として追加しなさい
   try {
     const response = await fetch("/api/tasks");
     if (!response.ok) {
+      // 通信が成功してかつステータスコードが200番台以外の場合
       throw new Error(`Error: ${response.statusText}`);
     }
-    console.log(`/api/tasks: ${document.cookie ?? "empty"}`);
     const data = await response.json();
     data.items.forEach(task => appendToDoItem(task));
   } catch (error) {
@@ -42,12 +44,9 @@ form.addEventListener("submit", async (e) => {
       },
       body: JSON.stringify({ name: todo }),
     });
-    console.log(`/api/tasks - POST: ${document.cookie ?? "empty"}`);
-
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
-
     const newTask = await response.json();
     appendToDoItem(newTask); // 新しく作成したタスクを追加
   } catch (error) {
@@ -78,11 +77,9 @@ function appendToDoItem(task) {
         },
         body: JSON.stringify({ status: toggle.checked ? "completed" : "active" }),
       });
-      console.log(`/api/tasks/${task.id} - PATCH: ${document.cookie ?? "empty"}`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-
       const updatedTask = await response.json();
       label.style.textDecorationLine = updatedTask.status === "completed" ? "line-through" : "none";
     } catch (error) {
@@ -100,7 +97,6 @@ function appendToDoItem(task) {
       const response = await fetch(`/api/tasks/${task.id}`, {
         method: "DELETE"
       });
-      console.log(`/api/tasks/${task.id} - DELETE: ${document.cookie ?? "empty"}`);
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
