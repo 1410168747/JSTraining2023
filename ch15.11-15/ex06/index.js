@@ -2,24 +2,24 @@ const form = document.querySelector("#new-todo-form");
 const list = document.querySelector("#todo-list");
 const input = document.querySelector("#new-todo");
 
-function getTodosFromLocalStorage() {
+function getTodosFromSessionStorage() {
   try {
-    const storedTodos = localStorage.getItem('todos');
+    const storedTodos = sessionStorage.getItem('todos');
     return storedTodos ? JSON.parse(storedTodos) : [];
   } catch (e) {
-    alert(`localStorage is not accessible: ${e}`);
+    alert(`sessionStorage is not accessible: ${e}`);
     return [];
   }
 }
 
-// ローカルストレージにToDoリストを保存する関数
-function saveTodosToLocalStorage(todos) {
+// セッションストレージにToDoリストを保存する関数
+function saveTodosToSessionStorage(todos) {
   try {
-    localStorage.setItem('todos', JSON.stringify(todos));
+    sessionStorage.setItem('todos', JSON.stringify(todos));
     // storageイベントをトリガーするために、他のタブに通知を行う
     window.dispatchEvent(new Event('storageUpdate'));
   } catch (e) {
-    alert(`localStorage is not accessible: ${e}`);
+    alert(`sessionStorage is not accessible: ${e}`);
   }
 }
 
@@ -37,11 +37,11 @@ function createToDoElement(text, completed) {
   toggle.checked = completed;
   toggle.addEventListener("change", () => {
     label.style.textDecorationLine = toggle.checked ? "line-through" : "none";
-    // ローカルストレージのToDoリストを更新
-    const todos = getTodosFromLocalStorage();
+    // セッションストレージのToDoリストを更新
+    const todos = getTodosFromSessionStorage();
     const index = todos.findIndex(t => t.text === text);
     todos[index].completed = toggle.checked;
-    saveTodosToLocalStorage(todos);
+    saveTodosToSessionStorage(todos);
   });
 
   const destroy = document.createElement("button");
@@ -49,11 +49,11 @@ function createToDoElement(text, completed) {
   destroy.textContent = "❌"; // ボタンに表示するテキスト
   destroy.addEventListener("click", () => {
     list.removeChild(elem);
-    // ローカルストレージのToDoリストから削除
-    const todos = getTodosFromLocalStorage();
+    // セッションストレージのToDoリストから削除
+    const todos = getTodosFromSessionStorage();
     const index = todos.findIndex(t => t.text === text);
     todos.splice(index, 1);
-    saveTodosToLocalStorage(todos);
+    saveTodosToSessionStorage(todos);
   });
 
   // TODO: elem 内に toggle, label, destroy を追加しなさい
@@ -65,9 +65,9 @@ function createToDoElement(text, completed) {
   return elem;
 }
 
-// 初期表示時にローカルストレージからToDoリストを取得し、画面に表示
+// 初期表示時にセッションストレージからToDoリストを取得し、画面に表示
 function renderTodos() {
-  const todos = getTodosFromLocalStorage();
+  const todos = getTodosFromSessionStorage();
   list.innerHTML = ''; // 既存のリストをクリア
   todos.forEach(todo => {
     list.prepend(createToDoElement(todo.text, todo.completed));
@@ -91,13 +91,13 @@ form.addEventListener("submit", (e) => {
   // // ここから #todo-list に追加する要素を構築する
   // const elem = createToDoElement(todo);
 
-  // ローカルストレージに保存されているToDoリストを取得し、新しいToDoを追加
-  const todos = getTodosFromLocalStorage();
+  // セッションストレージに保存されているToDoリストを取得し、新しいToDoを追加
+  const todos = getTodosFromSessionStorage();
   todos.push({ text: todo, completed: false });
-  saveTodosToLocalStorage(todos);
+  saveTodosToSessionStorage(todos);
 
-  createToDoElement(todo, false);
+  list.prepend(createToDoElement(todo, false));
 });
 
-// storageイベントをリッスンして、他のタブでの変更を反映
-window.addEventListener('storageUpdate', renderTodos);
+// sessionStorage のスコープは単一のタブに限られているため、他のタブでの変更は反映されない
+// window.addEventListener('storageUpdate', renderTodos);
