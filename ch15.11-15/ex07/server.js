@@ -44,7 +44,7 @@ async function serveContentsHandler(url, _req, res) {
 // CSP のヘッダを返すミドルウェア
 function cspMiddleware(_url, req, res) {
   // TODO: CSP ヘッダを設定する
-  res.setHeader("Content-Security-Policy", "script-src 'self' './hello.js'");
+  res.setHeader("Content-Security-Policy", "script-src 'self' './hello.js'");// Content-Security-Policyは許可リスト方式。したがって./world.js は許可されない
   return true;
 }
 
