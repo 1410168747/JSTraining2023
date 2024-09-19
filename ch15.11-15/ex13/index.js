@@ -1,25 +1,5 @@
-const model = 'gemma2:2b';
+const MODEL = 'gemma2:2b';
 const messages = [];
-
-function addMessage(role, content, addNewLine = false) {
-    const chatBox = document.getElementById('chat-box');
-    const messageSpan = document.createElement('span');
-    messageSpan.className = `message ${role}`;
-    messageSpan.textContent = content;
-    chatBox.appendChild(messageSpan);
-
-    if (addNewLine) {
-        const newLineBr = document.createElement('br');
-        chatBox.appendChild(newLineBr);
-    }
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function toggleSendButton(disabled) {
-    const sendButton = document.getElementById('send-button');
-    sendButton.disabled = disabled;
-}
 
 async function sendMessage() {
     const inputElement = document.getElementById('input');
@@ -38,7 +18,7 @@ async function sendMessage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: model,
+                model: MODEL,
                 messages: messages,
                 stream: true // ストリーミングを有効化
             })
@@ -65,7 +45,7 @@ async function sendMessage() {
                         addMessage('assistant', content);
                         done = jsonObject.done;
                     } catch (error) {
-                        console.error('Error parsing JSON:', error);
+                        throw new Error('Error parsing JSON:', error);
                     }
                 }
 
@@ -73,8 +53,27 @@ async function sendMessage() {
             }
         }
     } catch (error) {
-        console.error('Error fetching data:', error);
+        alert(`Error fetching data: ${error} - ${error.message}`);
     } finally {
         toggleSendButton(false); // 最終的にボタンを有効化
     }
+}
+
+function addMessage(role, content, addNewLine = false) {
+    const chatBox = document.getElementById('chat-box');
+    const messageSpan = document.createElement('span');
+    messageSpan.className = `message ${role}`;
+    messageSpan.textContent = content;
+    messageSpan.style.color = role === "user" ? "blue" : "green";
+    chatBox.appendChild(messageSpan);
+
+    if (addNewLine) {
+        chatBox.appendChild(document.createElement('br'));
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function toggleSendButton(disabled) {
+    const sendButton = document.getElementById('send-button');
+    sendButton.disabled = disabled;
 }
