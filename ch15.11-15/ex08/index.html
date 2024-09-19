@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Request/Response Example</title>
+</head>
+
+<body>
+    <div id="requests">
+        <div class="request">
+            <input type="text" placeholder="Enter your request" class="request-input">
+            <button onclick="sendRequest(this)">Send</button>
+            <span class="response"></span>
+        </div>
+    </div>
+    <button onclick="addRequest()">Add More Requests</button>
+
+    <script type="module" src="./index.js"></script>
+</body>
+
+</html>
