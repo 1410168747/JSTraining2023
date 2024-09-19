@@ -3,7 +3,6 @@ const form = document.querySelector("#new-todo-form");
 const list = document.querySelector("#todo-list");
 const input = document.querySelector("#new-todo");
 
-
 renderTodo();
 
 form.addEventListener("submit", (e) => {
