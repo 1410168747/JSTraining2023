@@ -29,9 +29,9 @@ document.getElementById("image").addEventListener("change", (event) => {
 
     // Web Workerに処理を依頼
     const worker = new Worker('worker.js');
-    worker.postMessage({ data, width: img.width, height: img.height });
+    worker.postMessage({ data, width: img.width, height: img.height });// Web Workerにメッセージを送信
 
-    worker.onmessage = (e) => {
+    worker.onmessage = (e) => {// Web Workerからのメッセージを受け取る
       const outputImageData = new ImageData(e.data, img.width, img.height);
       filteredCtx.putImageData(outputImageData, 0, 0);
     };

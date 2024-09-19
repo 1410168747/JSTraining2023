@@ -2,37 +2,55 @@ document.getElementById('uploadForm').addEventListener('submit', function (event
     event.preventDefault();
 
     // Get the access token and file input from the form
-    var accessToken = document.getElementById('accessToken').value;
-    var fileInput = document.getElementById('fileInput').files[0];
+    let accessToken = document.getElementById('accessToken').value;
+    let fileInput = document.getElementById('fileInput').files[0];
 
-    if (!accessToken || !fileInput) {
-        document.getElementById('status').innerText = "Access token and file are required.";
+    if (accessToken === null || accessToken === undefined) {
+        alert("Access token is required.");
         return;
     }
 
+    if (fileInput === null || fileInput === undefined) {
+        alert("Input file is required.");
+        return;
+    }
+
+    document.getElementById('upload').disabled = true;
+
     // Read the file data
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = function (e) {
         uploadFile(accessToken, fileInput.name, e.target.result);
     };
     reader.readAsArrayBuffer(fileInput);
 });
 
-function uploadFile(accessToken, fileName, fileData) {
-    var xhr = new XMLHttpRequest();
-    var url = "https://graph.microsoft.com/v1.0/me/drive/root:/" + encodeURIComponent(fileName) + ":/content";
-
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
-    xhr.setRequestHeader("Content-Type", "application/octet-stream");
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 201) {
+async function uploadFile(accessToken, fileName, fileData) {
+    const options = {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/octet-stream",
+        },
+        body: fileData,
+    }
+    const url = "https://graph.microsoft.com/v1.0/me/drive/root:/" + encodeURIComponent(fileName) + ":/content";
+    try {
+        const response = await fetch(url, options);
+        if (response.ok) {
             document.getElementById('status').innerText = "File uploaded successfully!";
-        } else if (xhr.readyState === 4) {
-            document.getElementById('status').innerText = "Upload failed: " + xhr.responseText;
+            return
+        } else {
+            const errorResponse = await response.json();
+            throw new Error(`Response: ${response}`);
         }
-    };
-
-    xhr.send(fileData);
+    } catch (error) {
+        // fetchが失敗した場合
+        // fetchが成功したがステータスコードが200番台以外の場合
+        // onSuccessがエラーを返した場合
+        alert(error.message);
+    } finally {
+        // Re-enable the button
+        document.getElementById('uploadButton').disabled = false;
+    }
 }

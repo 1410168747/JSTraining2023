@@ -36,8 +36,8 @@ function gaussianBlur(data, width, height) {
   return outputData;
 }
 
-self.onmessage = (e) => {
+self.onmessage = (e) => {// メインスレッドからのメッセージを受け取る
   const { data, width, height } = e.data;
   const outputData = gaussianBlur(data, width, height);
-  self.postMessage(outputData);
+  self.postMessage(outputData);// メインスレッドにメッセージを送信
 };
