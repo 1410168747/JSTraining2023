@@ -10,6 +10,7 @@ let threadsCompleted = 0;
 
 // 全体の実行時間計測開始
 console.time("Total execution time");
+console.log(`Thread pool size: ${process.env.UV_THREADPOOL_SIZE}`);
 
 // 動的にタスクをワーカーに割り当てる
 const assignTask = (worker) => {
