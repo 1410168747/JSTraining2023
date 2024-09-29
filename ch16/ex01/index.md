@@ -225,7 +225,7 @@
                 </tr>
             </tbody>
         </table>
-        なお<code>${process.env.UV_THREADPOOL_SIZE}</code>は<code>undefined</code>できなかった。
+        なお<code>${process.env.UV_THREADPOOL_SIZE}</code>は<code>undefined</code>となり取得できなかった。
     </section>
     <section>
         <h2>問</h2>
