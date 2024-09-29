@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs'; // 正しいインポート
+import { promises as fs } from 'fs';
 
 // ファイルの作成/初期化
 const filePath = './test.txt';
