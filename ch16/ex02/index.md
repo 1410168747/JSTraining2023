@@ -1,0 +1,9 @@
+Graceful Shutdown とは？
+
+子プロセスにも強制的に終了させるのではなく、シグナルを送ることでやるべき処理（例えばデータの保存や一時処理のクリーニングアップなど）を完了してから正しく終了する流れを作っています。
+
+KubernetesやAmazon ECSなどで一般的に利用されるシグナル
+
+SIGTERM が主にコンテナのグレースフルシャットダウンのために使われるシグナルです。KubernetesやAmazon ECSでコンテナを停止する際にまずSIGTERMが送信されます。その後、たとえばKubernetesではデフォルトで30秒（terminationGracePeriodSeconds）の猶予を与え、その間にコンテナが終了しない場合、強制終了のために SIGKILL が送信されます。
+SIGINT は通常、Ctrl+C などによるプロセスの手動中断に使われるシグナルですが、Graceful Shutdownの文脈でも使用されることがあります。
+したがって、クラウド基盤でのGraceful Shutdownでは主に SIGTERM がヒントとなるシグナルです。
