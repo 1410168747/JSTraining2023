@@ -19,7 +19,7 @@ export type PriorityTask = Task & {
 // Userオブジェクトであることを判定する
 function isUserObject(obj: any): obj is User {
   // 型述語(戻り値での型ガード)。
-  // 戻り値がtrueの場合、objはUser型であることをコンパイラに伝える
+  // 型術後: 戻り値がtrueの場合、objはUser型であることをコンパイラに伝える
   return (
     typeof obj === "object" &&
     typeof obj["id"] === "number" &&
