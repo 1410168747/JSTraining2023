@@ -31,7 +31,7 @@ Babel is a toolchain that is mainly used to convert ECMAScript 2015+ code into a
 </ul>
 </blockquote>
 
-_Babel_ は _JavaScript_ のトランスコンパイラです。_TypeScript_ のコードもトランスコンパイルすることができます。ただし、型の検証は行わず、型定義を削除するのみです。
+_Babel_ は _JavaScript_ のトランスコンパイラーです。_TypeScript_ のコードもトランスコンパイルすることができます。ただし、型の検証は行わず、型定義を削除するのみです。
 
 <blockquote cite="https://babeljs.io/docs#type-annotations-flow-and-typescript">
 <h2>Type Annotations (Flow and TypeScript)</h2>
