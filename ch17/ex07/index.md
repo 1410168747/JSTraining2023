@@ -43,7 +43,7 @@ Babel can strip out type annotations! Check out either our Flow preset or TypeSc
 
 ### `tsc`
 
-_TSC_ も _TypeScript_ のトランスコンパイラーです。ただし、_TSC_ は型チェクも行います。
+_TSC_ も _TypeScript_ のトランスコンパイラーです。ただし、_TSC_ は型チェックも行います。
 
 ## 参考
 
