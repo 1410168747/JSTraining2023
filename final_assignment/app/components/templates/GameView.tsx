@@ -36,12 +36,10 @@ interface GameViewProps {
 const shuffle = (array: any[]) => {
   const cloneArray = [...array];
 
-  for (let i = cloneArray.length - 1; i >= 0; i--) {
-    let rand = Math.floor(Math.random() * (i + 1));
+  for (let i = cloneArray.length - 1; i > 0; i--) {
+    const rand = Math.floor(Math.random() * (i + 1));
     // 配列の要素の順番を入れ替える
-    let tmpStorage = cloneArray[i];
-    cloneArray[i] = cloneArray[rand];
-    cloneArray[rand] = tmpStorage;
+    [cloneArray[i], cloneArray[rand]] = [cloneArray[rand], cloneArray[i]];
   }
 
   return cloneArray;
@@ -52,9 +50,10 @@ export const GameView = ({ taskId, onTaskCompleted }: GameViewProps) => {
   const [countdown, setCountdown] = useState(3);
   const [gameStarted, setGameStarted] = useState(false);
   const selectId = taskId;
-  const { instruction, topics } = select(tasks.tasks, selectId); // データセットの選択
+  let { instruction, topics } = select(tasks.tasks, selectId); // データセットの選択
   if (settings.doShuffle) {
-    shuffle(topics);
+    console.log();
+    topics = shuffle(topics);
   }
   const [currentTopicIndex, setCurrentTopicIndex] = useState(0); // 課題番号の管理
   const [currentTopic, setCurrentTopic] = useState(topics[currentTopicIndex]); // 現在の課題文字列

@@ -30,7 +30,6 @@ export const Play = () => {
         <GameView
           taskId={selectedTaskId}
           onTaskCompleted={handleTaskCompleted}
-          showHint={false}
         />
       )}
       {currentScreen === "result" && result && (

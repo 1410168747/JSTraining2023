@@ -10,27 +10,45 @@ export const SettingsView: React.FC = () => {
   };
 
   return (
-    <div>
-      <button
-        onClick={() =>
-          handleSettingsChange({
-            showHint: !settings.showHint,
-            doShuffle: settings.doShuffle,
-          })
-        }
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
+      <div
+        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        {settings.showHint ? "ヒントがみえます" : "ヒントがみえません"}
-      </button>
-      <button
-        onClick={() =>
-          handleSettingsChange({
-            showHint: settings.showHint,
-            doShuffle: !settings.doShuffle,
-          })
-        }
+        <p>ヒントが</p>
+        <button
+          style={{ marginLeft: "10px" }}
+          onClick={() =>
+            handleSettingsChange({
+              showHint: !settings.showHint,
+              doShuffle: settings.doShuffle,
+            })
+          }
+        >
+          {settings.showHint ? "みえます" : "みえません"}
+        </button>
+      </div>
+      <div
+        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        {settings.doShuffle ? "シャッフルされます" : "シャッフルされません"}
-      </button>
+        <p>もんだいがシャッフル</p>
+        <button
+          style={{ marginLeft: "10px" }}
+          onClick={() =>
+            handleSettingsChange({
+              showHint: settings.showHint,
+              doShuffle: !settings.doShuffle,
+            })
+          }
+        >
+          {settings.doShuffle ? "されます" : "されません"}
+        </button>
+      </div>
     </div>
   );
 };
